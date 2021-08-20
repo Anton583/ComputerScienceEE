@@ -1,2 +1,10 @@
 .stack-work/
+ChangeLog.md
+Haskell.cabal
+hie.yaml
+LICENSE
+package.yaml
+README.md
+stack.yaml
+stack.yaml.lock
 *~

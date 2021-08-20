@@ -1,42 +1,81 @@
 module Main where
 
-import           Control.Monad  (replicateM)
-import           Criterion.Main (bench, bgroup, defaultMain, whnf)
-import           Lib
-import           System.Random  (getStdRandom, randomRIO)
+import Control.Monad (replicateM)
+import Criterion.Main (bench, bgroup, defaultMain, nf, whnf)
+import Lib ()
+import System.Random (getStdRandom, randomRIO)
 
+-- Make a list with custom number of random ints from 0 to 99
 makeIntValues :: Int -> IO [Integer]
-makeIntValues num = replicateM num (randomRIO (0, 99 :: Integer))
+makeIntValues num = replicateM num $ randomRIO (0, 99 :: Integer)
 
+modifyValues :: [Integer] -> [Integer]
+modifyValues = map (* 2)
+
+-- Sum of all ints in a list
 sumValues :: [Integer] -> Integer
-sumValues = foldr (+) 0
+sumValues = sum
 
--- Alternative, recursion by hand
-sumValues' :: Num a => [a] -> a
-sumValues'  []      = 0
-sumValues' [x]      = x
-sumValues' (x : xs) = x + sumValues' xs
-
--- >>= mbind (monadic bind, flatmap)
--- http://www.serpentine.com/criterion/tutorial.html
+reverseList :: [Integer] -> [Integer]
+reverseList = reverse
 
 main :: IO ()
 main = do
-    vals1000    <- makeIntValues 1000
-    vals5000    <- makeIntValues 5000
-    vals100000  <- makeIntValues 100000
-    vals1000000 <- makeIntValues 1000000
-    defaultMain [
-        bgroup "Large list sum."
-                [ bench "1000 integers sum"
-                       (whnf sumValues vals1000)
-                , bench "5000 integers sum"
-                       (whnf sumValues vals5000)
-                , bench "100000 integers sum"
-                       (whnf sumValues vals100000)
-                ]
+  vals1000 <- makeIntValues 1000
+  vals5000 <- makeIntValues 5000
+  vals100000 <- makeIntValues 100000
+  vals1000000 <- makeIntValues 1000000
+  defaultMain
+    -- modifyValues method main
+    [ bgroup
+        "Large list modification."
+        [ bench
+            "1000 integers modification"
+            (nf modifyValues vals1000),
+          bench
+            "5000 integers modification"
+            (nf modifyValues vals5000),
+          bench
+            "100000 integers modification"
+            (nf modifyValues vals100000),
+          bench
+            "1000000 integers modification"
+            (nf modifyValues vals1000000)
         ]
+    ]
 
+-- Reverse method main
+{- [ bgroup
+    "Large list reverse order."
+    [ bench
+        "1000 integers reverse order"
+        (nf reverseList vals1000),
+      bench
+        "5000 integers reverse order"
+        (nf reverseList vals5000),
+      bench
+        "100000 integers reverse order"
+        (nf reverseList vals100000),
+      bench
+        "1000000 integers reverse order"
+        (nf reverseList vals1000000)
+    ]
+ ] -}
 
-    {-makeIntValues 1000000
-    >>= \values -> print $ sumValues' values-}
+-- Sum method main
+{-  [ bgroup
+    "Large list sum."
+     [ bench
+        "1000 integers sum"
+        (nf sumValues vals1000),
+      bench
+        "5000 integers sum"
+        (nf sumValues vals5000),
+      bench
+        "100000 integers sum"
+        (nf sumValues vals100000),
+      bench
+        "1000000 integers sum"
+        (nf sumValues vals1000000)
+     ]
+  ] -}
