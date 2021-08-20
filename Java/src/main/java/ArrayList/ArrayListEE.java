@@ -4,17 +4,46 @@ import java.util.*;
 
 public class ArrayListEE {
     public static void main(String[] args) {
-        System.out.println(timeData(0) + ", " + timeData(1) + ", " + timeData(2));
+        Integer[] sizeArr = new Integer[] { 1000, 5000, 100000, 1000000 };
+        for (int i = 0; i < sizeArr.length; i++) {
+            System.out.println(
+                    timeResOutput(
+                            fillArrayList(sizeArr[i])
+                                 )
+                              );
+        }
+    }
+
+    // Output sum methods execution time result as string
+    public static String timeResOutput(ArrayList<Integer> sizedArray) {
+        return  "Sum method time: " + timeData(0, sizedArray)
+                + 
+                "; Modify array method time: " + timeData(1, sizedArray)
+                + 
+                "; Reverse array method time: " + timeData(2, sizedArray);
     }
 
     // Fill arrayList with random integers between 0 - 99;
-    public static ArrayList<Integer> fillArrayList() {
+    public static ArrayList<Integer> fillArrayList(int numberOfInts) {
         ArrayList<Integer> arrayList = new ArrayList<Integer>();
         Random rand = new Random();
-        for (int i = 0; i <= 4999; i++) {
+        for (int i = 0; i <= numberOfInts - 1; i++) {
             int randomInt = rand.nextInt(100);
             arrayList.add(randomInt);
         }
+        return arrayList;
+    }
+
+    // Multiply all elements in array list by 2
+    public static ArrayList<Integer> modifyArrayList(ArrayList<Integer> arrayList) {
+        for (int elem : arrayList) {
+            elem = elem * 2;
+        }
+        return arrayList;
+    }
+
+    public static ArrayList<Integer> reverseArrayList(ArrayList<Integer> arrayList) {
+        Collections.reverse(arrayList);
         return arrayList;
     }
 
@@ -26,26 +55,8 @@ public class ArrayListEE {
         return sum;
     }
 
-    // Recursive method to calculate sum of integers starting from the last index of
-    // array list (Stack overflow - max 5680 elements in arrayList)
-    public static int recursiveSumOfArr(ArrayList<Integer> arrayList, int arrEndIndex) {
-        if (arrEndIndex == 0)
-            return arrayList.get(arrEndIndex);
-        return arrayList.get(arrEndIndex) + recursiveSumOfArr(arrayList, arrEndIndex - 1);
-    }
-
-    // Recursive method to calculate sum of integers starting from the first index
-    // of array list using sublist (Stack overflow - max 9858 in arrayList)
-    public static int recursiveSumOfArr2(List<Integer> arrayList, int startIndex) {
-        if (startIndex == arrayList.size() - 1)
-            return arrayList.get(startIndex);
-        return arrayList.get(startIndex) + recursiveSumOfArr2(arrayList.subList(0, arrayList.size()), startIndex + 1);
-
-    }
-
-    // Measure execution time of array list sum methods
-    public static ArrayList<Double> executionTime() {
-        var filledArrayList = fillArrayList();
+    // Measure execution time of methods
+    public static ArrayList<Double> executionTime(ArrayList<Integer> filledArrayList) {
         ArrayList<Double> timeArr = new ArrayList<Double>();
 
         double startTime1 = System.nanoTime();
@@ -53,38 +64,35 @@ public class ArrayListEE {
         double stopTime1 = System.nanoTime();
 
         double startTime2 = System.nanoTime();
-        recursiveSumOfArr(filledArrayList, filledArrayList.size() - 1);
+        modifyArrayList(filledArrayList);
         double stopTime2 = System.nanoTime();
 
         double startTime3 = System.nanoTime();
-        recursiveSumOfArr2(filledArrayList, 0);
+        reverseArrayList(filledArrayList);
         double stopTime3 = System.nanoTime();
 
+        // Reverse Array method
+        double finalTimeReverse = (startTime3 - stopTime3) * (-1);
+        // Modify Array method execution time
+        double finalTimeModify = (startTime2 - stopTime2) * (-1);
         // Interative sum method execution time
-        double finalTimeIterative = (startTime1 - stopTime1) * (-1);
-        // Recursion sum method execution time
-        double finalTimeRecursion = (startTime2 - stopTime2) * (-1);
-        // Recursion sum sublist method execution time
-        double finalTimeRecursion2 = (startTime3 - stopTime3) * (-1);
-
+        double finalTimeSum = (startTime1 - stopTime1) * (-1);
         // Add time data to arrayList timeArr:
         // [min execution time, max execution time, average execution time]
-        timeArr.add(finalTimeIterative);
-        timeArr.add(finalTimeRecursion);
-        timeArr.add(finalTimeRecursion2);
-
+        timeArr.add(finalTimeSum);
+        timeArr.add(finalTimeModify);
+        timeArr.add(finalTimeReverse);
         return timeArr;
     }
 
-    // TypeOfMethod: 0 - iterative, 1 - recursion using last index, 2 - recursion
-    // using sublist
-    public static ArrayList<Double> timeData(int typeOfMethod) {
+    // TypeOfMethod: 0 - iterative
+    public static ArrayList<Double> timeData(int typeOfMethod, ArrayList<Integer> sizedArray) {
         ArrayList<Double> arrayListTime = new ArrayList<Double>();
         ArrayList<Double> resultTime = new ArrayList<Double>();
         double sum = 0;
         // Get execution time of chosen method 100 times and add to the arrayListTime
         for (int i = 0; i <= 100; i++) {
-            double executionTime = executionTime().get(typeOfMethod);
+            double executionTime = executionTime(sizedArray).get(typeOfMethod);
             arrayListTime.add(executionTime);
         }
         // Calculate sum of all calculated time
