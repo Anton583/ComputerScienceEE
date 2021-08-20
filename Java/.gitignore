@@ -1,2 +1,5 @@
 pom.xml
 .vscode
+.classpath
+.project
+.settings
