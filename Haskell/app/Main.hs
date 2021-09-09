@@ -19,6 +19,11 @@ sumValues = sum
 reverseList :: [Integer] -> [Integer]
 reverseList = reverse
 
+increaseValue :: (Integer, Integer) -> Integer 
+increaseValue (num, 0) = num
+increaseValue (num, numOfIterations) = increaseValue (num + 1, numOfIterations - 1)
+
+
 main :: IO ()
 main = do
   vals1000 <- makeIntValues 1000
@@ -26,8 +31,45 @@ main = do
   vals100000 <- makeIntValues 100000
   vals1000000 <- makeIntValues 1000000
   defaultMain
+-- Sum method main
+   [ bgroup
+    "Large list sum."
+     [ bench
+        "1000 integers sum"
+        (nf sumValues vals1000),
+      bench
+        "5000 integers sum"
+        (nf sumValues vals5000),
+      bench
+        "100000 integers sum"
+        (nf sumValues vals100000),
+      bench
+        "1000000 integers sum"
+        (nf sumValues vals1000000)
+     ]
+   ] 
+{-   [ bgroup
+    "Iteration over a single value."
+     [ bench
+        "1000 iterations"
+        (nf increaseValue (0, 1000)),
+      bench
+        "5000 iterations"
+        (nf increaseValue (0, 5000)),
+      bench
+        "100000 iterations"
+        (nf increaseValue (0, 100000)),
+      bench
+        "1000000 iterations"
+        (nf increaseValue (0, 1000000))
+     ]
+   ]
+-}
+
+
+
     -- modifyValues method main
-    [ bgroup
+{-    [ bgroup
         "Large list modification."
         [ bench
             "1000 integers modification"
@@ -42,8 +84,7 @@ main = do
             "1000000 integers modification"
             (nf modifyValues vals1000000)
         ]
-    ]
-
+    ] -}
 -- Reverse method main
 {- [ bgroup
     "Large list reverse order."
@@ -62,20 +103,4 @@ main = do
     ]
  ] -}
 
--- Sum method main
-{-  [ bgroup
-    "Large list sum."
-     [ bench
-        "1000 integers sum"
-        (nf sumValues vals1000),
-      bench
-        "5000 integers sum"
-        (nf sumValues vals5000),
-      bench
-        "100000 integers sum"
-        (nf sumValues vals100000),
-      bench
-        "1000000 integers sum"
-        (nf sumValues vals1000000)
-     ]
-  ] -}
+ 
