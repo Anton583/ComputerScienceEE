@@ -4,26 +4,29 @@ import java.util.*;
 
 public class ArrayListEE {
     public static void main(String[] args) {
-        Integer[] sizeArr = new Integer[] { 1000, 5000, 100000, 1000000 };
-        for (int i = 0; i < sizeArr.length; i++) {
-            System.out.println(
-                    timeResOutput(
-                            fillArrayList(sizeArr[i])
-                                 )
-                              );
+        Integer[] sizedArr = new Integer[] { 1000, 5000, 100000, 1000000 };
+        // execute both methods a large number of times before output the result
+        for (int i = 1000000; i >= 0; i--){
+            timeData(0, fillArrayList(100), 100);
+            timeData(1, fillArrayList(100), 100);
+        }
+        for (int i = 0; i < sizedArr.length; i++) {
+            System.out.println("Sum method time: " + timeData(0, fillArrayList(sizedArr[i]), sizedArr[i]) +
+            "; Iterate over a single value method: " + timeData(1, fillArrayList(sizedArr[i]), sizedArr[i]) + ";");
         }
     }
 
-    // Output sum methods execution time result as string
-    public static String timeResOutput(ArrayList<Integer> sizedArray) {
-        return  "Sum method time: " + timeData(0, sizedArray)
-                + 
-                "; Modify array method time: " + timeData(1, sizedArray)
-                + 
-                "; Reverse array method time: " + timeData(2, sizedArray);
-    }
+    // increase value by the provided number of iterations
+    public static int increaseValue(int numOfIterations) {
+        int val = 0;
+            while (numOfIterations > 0) {
+                val += 1;
+                numOfIterations -= 1;
+                }
+            return val;
+}
 
-    // Fill arrayList with random integers between 0 - 99;
+    // fill arrayList with random integers between 0 - 99;
     public static ArrayList<Integer> fillArrayList(int numberOfInts) {
         ArrayList<Integer> arrayList = new ArrayList<Integer>();
         Random rand = new Random();
@@ -34,20 +37,7 @@ public class ArrayListEE {
         return arrayList;
     }
 
-    // Multiply all elements in array list by 2
-    public static ArrayList<Integer> modifyArrayList(ArrayList<Integer> arrayList) {
-        for (int elem : arrayList) {
-            elem = elem * 2;
-        }
-        return arrayList;
-    }
-
-    public static ArrayList<Integer> reverseArrayList(ArrayList<Integer> arrayList) {
-        Collections.reverse(arrayList);
-        return arrayList;
-    }
-
-    // Iterative method to calculate sum of integers in array list
+    // iterative method to calculate sum of integers in array list
     public static int sumOfArrayList(ArrayList<Integer> arrayList) {
         int sum = 0;
         for (int i = 0; i < arrayList.size(); i++)
@@ -56,43 +46,35 @@ public class ArrayListEE {
     }
 
     // Measure execution time of methods
-    public static ArrayList<Double> executionTime(ArrayList<Integer> filledArrayList) {
-        ArrayList<Double> timeArr = new ArrayList<Double>();
+    public static ArrayList<Long> executionTime(ArrayList<Integer> filledArrayList, int numOfIterations) {
+        ArrayList<Long> timeArr = new ArrayList<Long>();
+        // execution time of increaseVal method
+        long startTime = System.nanoTime();
+        increaseValue(numOfIterations);
+        long stopTime = System.nanoTime();
+        long finalTimeSingleVal = (startTime - stopTime) * (-1);
 
-        double startTime1 = System.nanoTime();
+        // execution time of sumArrayList method
+        long startTime1 = System.nanoTime();
         sumOfArrayList(filledArrayList);
-        double stopTime1 = System.nanoTime();
-
-        double startTime2 = System.nanoTime();
-        modifyArrayList(filledArrayList);
-        double stopTime2 = System.nanoTime();
-
-        double startTime3 = System.nanoTime();
-        reverseArrayList(filledArrayList);
-        double stopTime3 = System.nanoTime();
-
-        // Reverse Array method
-        double finalTimeReverse = (startTime3 - stopTime3) * (-1);
-        // Modify Array method execution time
-        double finalTimeModify = (startTime2 - stopTime2) * (-1);
-        // Interative sum method execution time
-        double finalTimeSum = (startTime1 - stopTime1) * (-1);
+        long stopTime1 = System.nanoTime();
+        long finalTimeSum = (startTime1 - stopTime1) * (-1);
         // Add time data to arrayList timeArr:
-        // [min execution time, max execution time, average execution time]
+        // [min execution time, max execution time, average execution time, standard deviation]
         timeArr.add(finalTimeSum);
-        timeArr.add(finalTimeModify);
-        timeArr.add(finalTimeReverse);
+        timeArr.add(finalTimeSingleVal);
         return timeArr;
     }
 
-    // TypeOfMethod: 0 - iterative
-    public static ArrayList<Double> timeData(int typeOfMethod, ArrayList<Integer> sizedArray) {
-        ArrayList<Double> arrayListTime = new ArrayList<Double>();
-        ArrayList<Double> resultTime = new ArrayList<Double>();
-        double sum = 0;
+    // TypeOfMethod: 0 - sumArrayList method execution time
+    // TypeOfMethod: 1 - increaseValue method execution time
+    public static ArrayList<Long> timeData(int typeOfMethod, ArrayList<Integer> sizedArray, int numOfIterations) {
+        ArrayList<Long> arrayListTime = new ArrayList<Long>();
+        ArrayList<Long> resultTime = new ArrayList<Long>();
+        long sum = 0l;
         // Get execution time of chosen method 100 times and add to the arrayListTime
         for (int i = 0; i <= 100; i++) {
-            double executionTime = executionTime(sizedArray).get(typeOfMethod);
+            long executionTime = executionTime(sizedArray, numOfIterations).get(typeOfMethod);
             arrayListTime.add(executionTime);
         }
         // Calculate sum of all calculated time
@@ -103,15 +85,21 @@ public class ArrayListEE {
         // execution time
         Collections.sort(arrayListTime);
         // min execution time
-        double min = arrayListTime.get(0);
+        long min = arrayListTime.get(0);
         // max execution time
-        double max = arrayListTime.get(arrayListTime.size() - 1);
+        long max = arrayListTime.get(arrayListTime.size() - 1);
         // avg - average execution time
-        double avg = sum / arrayListTime.size();
+        long avg = sum / arrayListTime.size();
+        // standard deviation
+        long stdDev = 0l;
+        for(long num : arrayListTime) {
+            stdDev += Math.pow(num - avg, 2);
+        }
         // Add time data to the resultTime
         resultTime.add(min);
         resultTime.add(max);
         resultTime.add(avg);
+        resultTime.add((long)Math.sqrt(stdDev/arrayListTime.size()));
         return resultTime;
     }
 }
