@@ -23,6 +23,14 @@ increaseValue :: (Integer, Integer) -> Integer
 increaseValue (num, 0) = num
 increaseValue (num, numOfIterations) = increaseValue (num + 1, numOfIterations - 1)
 
+makeComplicatedIteration :: (Double, Integer) -> Double 
+makeComplicatedIteration (n, 0) = n
+makeComplicatedIteration (n, numOfIterations) = makeComplicatedIteration (finalExpr, numOfIterations - 1)
+  where finalExpr = (n + 2/n) * (-0.5)
+
+ 
+ 
+
 
 main :: IO ()
 main = do
@@ -31,40 +39,45 @@ main = do
   vals100000 <- makeIntValues 100000
   vals1000000 <- makeIntValues 1000000
   defaultMain
--- Sum method main
-   [ bgroup
-    "Large list sum."
-     [ bench
-        "1000 integers sum"
-        (nf sumValues vals1000),
-      bench
-        "5000 integers sum"
-        (nf sumValues vals5000),
-      bench
-        "100000 integers sum"
-        (nf sumValues vals100000),
-      bench
-        "1000000 integers sum"
-        (nf sumValues vals1000000)
-     ]
-   ] 
-{-   [ bgroup
+      [ bgroup
     "Iteration over a single value."
      [ bench
         "1000 iterations"
-        (nf increaseValue (0, 1000)),
+        (nf makeComplicatedIteration (1, 1000)),
       bench
         "5000 iterations"
-        (nf increaseValue (0, 5000)),
+        (nf makeComplicatedIteration (1, 5000)),
       bench
         "100000 iterations"
-        (nf increaseValue (0, 100000)),
+        (nf makeComplicatedIteration(1, 100000)),
       bench
         "1000000 iterations"
-        (nf increaseValue (0, 1000000))
-     ]
-   ]
--}
+        (nf makeComplicatedIteration (1, 1000000))
+        ]
+      ]
+
+
+
+
+-- Sum method main
+  --  [ bgroup
+  --   "Large list sum."
+  --    [ bench
+  --       "1000 integers sum"
+  --       (nf sumValues vals1000),
+  --     bench
+  --       "5000 integers sum"
+  --       (nf sumValues vals5000),
+  --     bench
+  --       "100000 integers sum"
+  --       (nf sumValues vals100000),
+  --     bench
+  --       "1000000 integers sum"
+  --       (nf sumValues vals1000000)
+  --    ]
+  --  ] 
+
+
 
 
 
