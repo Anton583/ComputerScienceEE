@@ -1,29 +1,52 @@
 package ArrayList;
-
 import java.util.*;
 
 public class ArrayListEE {
     public static void main(String[] args) {
         Integer[] sizedArr = new Integer[] { 1000, 5000, 100000, 1000000 };
-        // execute both methods a large number of times before output the result
-        for (int i = 1000000; i >= 0; i--){
-            timeData(0, fillArrayList(100), 100);
-            timeData(1, fillArrayList(100), 100);
+//         execute both methods a large number of times before output the result
+        for (int i = 100000; i >= 0; i--){
+            timeData(0, fillArrayList(100), 0, 0);
+            timeData(1, fillArrayList(100), 1, 100);
+            timeData(2, fillArrayList(100), 0, 0);
         }
         for (int i = 0; i < sizedArr.length; i++) {
-            System.out.println("Sum method time: " + timeData(0, fillArrayList(sizedArr[i]), sizedArr[i]) +
-            "; Iterate over a single value method: " + timeData(1, fillArrayList(sizedArr[i]), sizedArr[i]) + ";");
-        }
+            System.out.println("Sum method time: " + timeData(0, fillArrayList(sizedArr[i]),0, sizedArr[i]) +
+                    "; Iterate over a single value method: " + timeData(1, fillArrayList(sizedArr[i]),1, sizedArr[i]) + ";" +
+                    "  Modify array method execution time: " + timeData(2, fillArrayList(sizedArr[i]), 0, 0) + ";");
+      }
+
     }
+
+
 
     // increase value by the provided number of iterations
     public static int increaseValue(int numOfIterations) {
         int val = 0;
-            while (numOfIterations > 0) {
-                val += 1;
-                numOfIterations -= 1;
-                }
-            return val;
+        while (numOfIterations > 0) {
+            val += 1;
+            numOfIterations -= 1;
+        }
+        return val;
+    }
+
+    // Multiply all elements in array list by 2
+    public static ArrayList<Integer> modifyArrayList(ArrayList<Integer> arrayList) {
+            for (int i = 0; i < arrayList.size(); i++){
+                int elem = arrayList.get(i);
+                    arrayList.set(i, elem*2);
+
+        }
+        return arrayList;
+    }
+
+    // Make more complicated iteration over a single value by the provided number of iterations
+        public static double makeComplicatedIteration(double n, int numOfIterations){
+        while (numOfIterations > 0){
+            n = (n + 2/n) * (-0.5);
+            numOfIterations -= 1;
+        }
+            return n;
 }
 
     // fill arrayList with random integers between 0 - 99;
@@ -46,11 +69,11 @@ public class ArrayListEE {
     }
 
     // Measure execution time of methods
-    public static ArrayList<Long> executionTime(ArrayList<Integer> filledArrayList, int numOfIterations) {
+    public static ArrayList<Long> executionTime(ArrayList<Integer> filledArrayList, double value, int numOfIterations) {
         ArrayList<Long> timeArr = new ArrayList<Long>();
         // execution time of increaseVal method
         long startTime = System.nanoTime();
-        increaseValue(numOfIterations);
+        makeComplicatedIteration(value, numOfIterations);
         long stopTime = System.nanoTime();
         long finalTimeSingleVal = (startTime - stopTime) * (-1);
 
@@ -59,22 +82,28 @@ public class ArrayListEE {
         sumOfArrayList(filledArrayList);
         long stopTime1 = System.nanoTime();
         long finalTimeSum = (startTime1 - stopTime1) * (-1);
+
+        long startTime2 = System.nanoTime();
+        modifyArrayList(filledArrayList);
+        long stopTime2 = System.nanoTime();
+        long finalTimeModifyArray = (startTime2 - stopTime2) * (-1);
         // Add time data to arrayList timeArr:
         // [min execution time, max execution time, average execution time, standard deviation]
         timeArr.add(finalTimeSum);
         timeArr.add(finalTimeSingleVal);
+        timeArr.add(finalTimeModifyArray);
         return timeArr;
     }
 
     // TypeOfMethod: 0 - sumArrayList method execution time
     // TypeOfMethod: 1 - increaseValue method execution time
-    public static ArrayList<Long> timeData(int typeOfMethod, ArrayList<Integer> sizedArray, int numOfIterations) {
+    public static ArrayList<Long> timeData(int typeOfMethod, ArrayList<Integer> sizedArray, double value, int numOfIterations) {
         ArrayList<Long> arrayListTime = new ArrayList<Long>();
         ArrayList<Long> resultTime = new ArrayList<Long>();
         long sum = 0l;
         // Get execution time of chosen method 100 times and add to the arrayListTime
         for (int i = 0; i <= 100; i++) {
-            long executionTime = executionTime(sizedArray, numOfIterations).get(typeOfMethod);
+            long executionTime = executionTime(sizedArray, value, numOfIterations).get(typeOfMethod);
             arrayListTime.add(executionTime);
         }
         // Calculate sum of all calculated time
